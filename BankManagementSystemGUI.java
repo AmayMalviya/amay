@@ -1,4 +1,4 @@
-package quiz.game;
+package javaapplication1;
 
 import javax.swing.*;
 import java.awt.*;
@@ -198,6 +198,16 @@ public class BankManagementSystemGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 createSavingsAccount();
+            }
+        });
+        
+        // Transfer button
+        JButton transferButton = new JButton("Transfer");
+        inputPanel.add(transferButton);
+        transferButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transfer();
             }
         });
 
@@ -420,5 +430,42 @@ void deposit() {
         } catch (NumberFormatException e) {
             outputTextArea.append("Invalid initial balance or overdraft limit.\n");
         }
+    }
+    
+    
+    private void transfer() {
+        String sourceAccountNumberText = accountNumberField.getText();
+        String destinationAccountNumberText = actionAmountField.getText();
+
+        // Find the source and destination accounts by account number
+        AccountDetails sourceAccount = findAccount(sourceAccountNumberText);
+        AccountDetails destinationAccount = findAccount(destinationAccountNumberText);
+
+        if (sourceAccount != null && destinationAccount != null) {
+            try {
+                double transferAmount = Double.parseDouble(actionAmountField.getText());
+
+                // Check if source account has sufficient balance
+                double sourceBalance = Double.parseDouble(sourceAccount.getBalance());
+
+                if (sourceBalance >= transferAmount) {
+                    // Perform the transfer
+                    sourceAccount.withdraw(transferAmount);
+                    destinationAccount.deposit(transferAmount);
+
+                    // Display success message
+                    outputTextArea.append("Transfer successful.\n");
+                } else {
+                    // Insufficient funds in the source account
+                    outputTextArea.append("Insufficient funds in the source account.\n");
+                }
+            } catch (NumberFormatException e) {
+                // Handle invalid transfer amount
+                outputTextArea.append("Invalid transfer amount.\n");
+            }
+        } else {
+            // Source or destination account not found
+            outputTextArea.append("Source or destination account not found.\n");
+        } 
     }
 }
